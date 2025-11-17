@@ -418,13 +418,16 @@ if prompt:
                 with st.spinner("🔊 Generating voice response..."):
                     audio_file = text_to_speech(full_response)
                     if audio_file:
-                        # Display audio player with autoplay
-                        st.audio(audio_file, format='audio/mp3', autoplay=True)
+                        # Read audio file as bytes
+                        with open(audio_file, 'rb') as f:
+                            audio_bytes = f.read()
 
-                        # Clean up temp file after a delay
+                        # Display audio player
+                        st.audio(audio_bytes, format='audio/mp3')
+                        st.caption("🔊 Click play to hear the response")
+
+                        # Clean up temp file
                         try:
-                            import time
-                            time.sleep(1)  # Give time for audio to load
                             os.unlink(audio_file)
                         except:
                             pass
