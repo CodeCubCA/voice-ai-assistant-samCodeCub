@@ -446,9 +446,10 @@ if prompt:
             error_message = f"⚠️ Error: {str(e)}"
             message_placeholder.markdown(error_message)
             st.session_state.messages.append({"role": "assistant", "content": error_message})
+            st.rerun()
 
-    # After processing, rerun to clear the input
-    st.rerun()
+    # Don't rerun here - it would clear the audio player
+    # The next user interaction will trigger a rerun naturally
 
 # Footer
 st.divider()
