@@ -85,11 +85,28 @@ def detect_voice_command(text):
     if "change personality" in text_lower or "switch personality" in text_lower:
         if "clash royale" in text_lower or "clash royal" in text_lower:
             return "change_personality", "Clash Royale"
+        elif "professional" in text_lower:
+            return "change_personality", "Professional"
 
     return None, None
 
 # Personality configurations
 PERSONALITIES = {
+    "Professional": {
+        "name": "Professional Assistant",
+        "emoji": "💼",
+        "description": "A knowledgeable and professional AI assistant for business and general inquiries.",
+        "system_prompt": """You are a professional AI assistant. You provide:
+- Clear, concise, and accurate information
+- Well-structured responses with proper formatting
+- Professional tone suitable for business and academic contexts
+- Thoughtful analysis and recommendations
+- Helpful guidance across various topics
+
+Maintain a professional yet approachable demeanor. Be articulate, organized, and thorough in your responses.
+Focus on providing value through accuracy, clarity, and practical insights. You can help with work-related tasks,
+learning, problem-solving, and general knowledge questions while maintaining professionalism."""
+    },
     "Clash Royale": {
         "name": "Clash Royale Champion",
         "emoji": "👑",
@@ -121,7 +138,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "personality" not in st.session_state:
-    st.session_state.personality = "Clash Royale"
+    st.session_state.personality = "Professional"
 
 if "voice_input" not in st.session_state:
     st.session_state.voice_input = ""
@@ -242,10 +259,10 @@ with st.sidebar:
         - "Delete history"
 
         **Change Personality:**
+        - "Change personality to Professional"
         - "Change personality to Clash Royale"
+        - "Switch personality to Professional"
         - "Switch personality to Clash Royale"
-
-        *More personalities coming soon!*
         """)
 
 # Main chat interface
