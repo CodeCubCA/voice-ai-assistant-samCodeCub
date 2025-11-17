@@ -415,26 +415,19 @@ if prompt:
 
             # Generate voice response for Professional personality only
             if st.session_state.personality == "Professional":
-                audio_file = text_to_speech(full_response)
-                if audio_file:
-                    # Read the audio file
-                    with open(audio_file, 'rb') as audio:
-                        audio_bytes = audio.read()
+                with st.spinner("🔊 Generating voice response..."):
+                    audio_file = text_to_speech(full_response)
+                    if audio_file:
+                        # Display audio player with autoplay
+                        st.audio(audio_file, format='audio/mp3', autoplay=True)
 
-                    # Encode to base64 for autoplay
-                    audio_base64 = base64.b64encode(audio_bytes).decode()
-                    audio_html = f'''
-                        <audio autoplay>
-                            <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
-                        </audio>
-                    '''
-                    st.markdown(audio_html, unsafe_allow_html=True)
-
-                    # Clean up temp file
-                    try:
-                        os.unlink(audio_file)
-                    except:
-                        pass
+                        # Clean up temp file after a delay
+                        try:
+                            import time
+                            time.sleep(1)  # Give time for audio to load
+                            os.unlink(audio_file)
+                        except:
+                            pass
 
         except Exception as e:
             error_message = f"⚠️ Error: {str(e)}"
