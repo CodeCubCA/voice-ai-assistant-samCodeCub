@@ -76,13 +76,19 @@ def text_to_speech(text):
     """Convert text to speech and return audio file"""
     try:
         import tempfile
+        # Limit text length to avoid timeouts
+        if len(text) > 500:
+            text = text[:500] + "..."
+
         # Create a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
             tts = gTTS(text=text, lang='en', slow=False)
             tts.save(fp.name)
             return fp.name
     except Exception as e:
-        st.error(f"Error generating speech: {e}")
+        # Log the specific error
+        print(f"TTS Error: {type(e).__name__}: {str(e)}")
+        st.warning(f"Could not generate voice: {str(e)}")
         return None
 
 # Function to detect and execute voice commands
@@ -415,22 +421,26 @@ if prompt:
 
             # Generate voice response for Professional personality only
             if st.session_state.personality == "Professional":
-                with st.spinner("🔊 Generating voice response..."):
-                    audio_file = text_to_speech(full_response)
-                    if audio_file:
-                        # Read audio file as bytes
-                        with open(audio_file, 'rb') as f:
-                            audio_bytes = f.read()
+                try:
+                    with st.spinner("🔊 Generating voice response..."):
+                        audio_file = text_to_speech(full_response)
+                        if audio_file and os.path.exists(audio_file):
+                            # Read audio file as bytes
+                            with open(audio_file, 'rb') as f:
+                                audio_bytes = f.read()
 
-                        # Display audio player
-                        st.audio(audio_bytes, format='audio/mp3')
-                        st.caption("🔊 Click play to hear the response")
+                            # Display audio player
+                            st.audio(audio_bytes, format='audio/mp3')
+                            st.caption("🔊 Click play to hear the response")
 
-                        # Clean up temp file
-                        try:
-                            os.unlink(audio_file)
-                        except:
-                            pass
+                            # Clean up temp file
+                            try:
+                                os.unlink(audio_file)
+                            except Exception as cleanup_error:
+                                print(f"Cleanup error: {cleanup_error}")
+                except Exception as tts_error:
+                    print(f"Voice generation error: {tts_error}")
+                    # Don't show error to user, just skip voice
 
         except Exception as e:
             error_message = f"⚠️ Error: {str(e)}"
