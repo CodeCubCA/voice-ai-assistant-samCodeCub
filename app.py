@@ -5,6 +5,8 @@ import os
 from audio_recorder_streamlit import audio_recorder
 import speech_recognition as sr
 import io
+from gtts import gTTS
+import base64
 
 # Load environment variables
 load_dotenv()
@@ -68,6 +70,20 @@ def transcribe_audio(audio_bytes, language='en-US'):
         return None, "network_error", None
     except Exception as e:
         return None, "unknown_error", None
+
+# Function to convert text to speech
+def text_to_speech(text):
+    """Convert text to speech and return audio file"""
+    try:
+        import tempfile
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
+            tts = gTTS(text=text, lang='en', slow=False)
+            tts.save(fp.name)
+            return fp.name
+    except Exception as e:
+        st.error(f"Error generating speech: {e}")
+        return None
 
 # Function to detect and execute voice commands
 def detect_voice_command(text):
@@ -396,6 +412,29 @@ if prompt:
 
             # Add assistant response to chat history
             st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+            # Generate voice response for Professional personality only
+            if st.session_state.personality == "Professional":
+                audio_file = text_to_speech(full_response)
+                if audio_file:
+                    # Read the audio file
+                    with open(audio_file, 'rb') as audio:
+                        audio_bytes = audio.read()
+
+                    # Encode to base64 for autoplay
+                    audio_base64 = base64.b64encode(audio_bytes).decode()
+                    audio_html = f'''
+                        <audio autoplay>
+                            <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+                        </audio>
+                    '''
+                    st.markdown(audio_html, unsafe_allow_html=True)
+
+                    # Clean up temp file
+                    try:
+                        os.unlink(audio_file)
+                    except:
+                        pass
 
         except Exception as e:
             error_message = f"⚠️ Error: {str(e)}"
