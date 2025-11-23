@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Microphone Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #status {
+            margin: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎤 Microphone Test</h1>
+    <p>Click the button below to test your microphone</p>
+
+    <button onclick="testMicrophone()">Test Microphone</button>
+
+    <div id="status">
+        Waiting...
+    </div>
+
+    <script>
+        async function testMicrophone() {
+            const statusDiv = document.getElementById('status');
+
+            try {
+                statusDiv.innerHTML = 'Requesting microphone access...';
+
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                statusDiv.innerHTML = '✅ SUCCESS! Microphone is working!<br><br>You can now use voice input in the chatbot.';
+                statusDiv.style.background = '#d4edda';
+
+                // Stop the stream
+                stream.getTracks().forEach(track => track.stop());
+
+            } catch (error) {
+                statusDiv.innerHTML = `❌ ERROR: ${error.message}<br><br>
+                    <strong>Solutions:</strong><br>
+                    1. Check browser permissions (microphone icon in address bar)<br>
+                    2. Make sure no other app is using your microphone<br>
+                    3. Try a different browser<br>
+                    4. Check System Preferences > Security & Privacy > Microphone`;
+                statusDiv.style.background = '#f8d7da';
+            }
+        }
+    </script>
+</body>
+</html>
