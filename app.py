@@ -97,10 +97,35 @@ def text_to_speech(text, voice=None):
         print(f"[TTS DEBUG] Last 150 chars: {text[-150:]}\n")
 
         async def generate_speech():
+            # Detect language from text characters
+            has_korean = any('\uac00' <= char <= '\ud7a3' for char in text)
+            has_chinese = any('\u4e00' <= char <= '\u9fff' for char in text)
+            has_japanese = any('\u3040' <= char <= '\u309f' or '\u30a0' <= char <= '\u30ff' for char in text)
+            has_arabic = any('\u0600' <= char <= '\u06ff' for char in text)
+            has_hindi = any('\u0900' <= char <= '\u097f' for char in text)
+
+            # Auto-detect and switch voice based on text language
+            use_voice = voice
+            if has_korean and not voice.startswith('ko-'):
+                use_voice = 'ko-KR-InJoonNeural'
+                print(f"[TTS DEBUG] Korean text detected, switching to: {use_voice}")
+            elif has_chinese and not voice.startswith('zh-'):
+                use_voice = 'zh-CN-YunxiNeural'
+                print(f"[TTS DEBUG] Chinese text detected, switching to: {use_voice}")
+            elif has_japanese and not voice.startswith('ja-'):
+                use_voice = 'ja-JP-KeitaNeural'
+                print(f"[TTS DEBUG] Japanese text detected, switching to: {use_voice}")
+            elif has_arabic and not voice.startswith('ar-'):
+                use_voice = 'ar-SA-HamedNeural'
+                print(f"[TTS DEBUG] Arabic text detected, switching to: {use_voice}")
+            elif has_hindi and not voice.startswith('hi-'):
+                use_voice = 'hi-IN-MadhurNeural'
+                print(f"[TTS DEBUG] Hindi text detected, switching to: {use_voice}")
+
             # Use style for more emotional and expressive delivery
             communicate = edge_tts.Communicate(
                 text,
-                voice,
+                use_voice,
                 rate='+0%',
                 pitch='+0Hz',
                 # Add prosody for more dramatic expression
