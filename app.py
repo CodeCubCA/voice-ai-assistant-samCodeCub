@@ -10,8 +10,21 @@ import base64
 # Load environment variables
 load_dotenv()
 
-# Configure Gemini API
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Configure Gemini API - check for API key
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    # Try to get from Streamlit secrets (for Hugging Face deployment)
+    try:
+        api_key = st.secrets.get("GEMINI_API_KEY")
+    except:
+        pass
+
+if not api_key:
+    st.error("❌ GEMINI_API_KEY not found! Please add it to Hugging Face Spaces secrets.")
+    st.info("Go to Settings → Repository secrets → Add GEMINI_API_KEY")
+    st.stop()
+
+genai.configure(api_key=api_key)
 
 # Function to convert audio to text
 def transcribe_audio(audio_bytes, language='en-US'):
