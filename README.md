@@ -2,6 +2,15 @@
 
 A voice-enabled AI chatbot built with Streamlit and Google Gemini API, featuring automatic speech-to-text transcription and multi-language support.
 
+## 🚀 Live Deployments
+
+This project is deployed on multiple platforms:
+
+- **Hugging Face Spaces**: [https://huggingface.co/spaces/sam-codecub/voice-ai-assistant](https://huggingface.co/spaces/sam-codecub/voice-ai-assistant)
+- **GitHub**: [https://github.com/CodeCubCA/voice-ai-assistant-samCodeCub](https://github.com/CodeCubCA/voice-ai-assistant-samCodeCub)
+
+Try the live demo on Hugging Face Spaces!
+
 ## Features
 
 - **Voice Input**: Click-to-record voice input with automatic transcription
