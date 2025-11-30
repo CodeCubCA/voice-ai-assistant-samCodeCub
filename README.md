@@ -1,3 +1,14 @@
+---
+title: Voice AI Assistant
+emoji: 🎙️
+colorFrom: blue
+colorTo: purple
+sdk: streamlit
+sdk_version: 1.28.0
+app_file: app.py
+pinned: false
+---
+
 # Voice AI Assistant
 
 A voice-enabled AI chatbot built with Streamlit and Google Gemini API, featuring automatic speech-to-text transcription and multi-language support.
