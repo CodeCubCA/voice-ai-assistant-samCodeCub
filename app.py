@@ -11,17 +11,23 @@ import base64
 load_dotenv()
 
 # Configure Gemini API - check for API key
+api_key = None
+
+# Try environment variable first (local development)
 api_key = os.getenv("GEMINI_API_KEY")
+
+# Try Streamlit secrets (Hugging Face deployment)
 if not api_key:
-    # Try to get from Streamlit secrets (for Hugging Face deployment)
     try:
-        api_key = st.secrets.get("GEMINI_API_KEY")
-    except:
-        pass
+        if hasattr(st, 'secrets') and "GEMINI_API_KEY" in st.secrets:
+            api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception as e:
+        print(f"Error accessing secrets: {e}")
 
 if not api_key:
-    st.error("❌ GEMINI_API_KEY not found! Please add it to Hugging Face Spaces secrets.")
-    st.info("Go to Settings → Repository secrets → Add GEMINI_API_KEY")
+    st.error("❌ GEMINI_API_KEY not found!")
+    st.info("📝 For Hugging Face Spaces: Go to Settings → Repository secrets → Add secret named 'GEMINI_API_KEY'")
+    st.info("🔑 Get your API key from: https://makersuite.google.com/app/apikey")
     st.stop()
 
 genai.configure(api_key=api_key)
