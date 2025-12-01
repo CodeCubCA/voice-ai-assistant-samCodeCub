@@ -13,21 +13,30 @@ load_dotenv()
 # Configure Gemini API - check for API key
 api_key = None
 
-# Try environment variable first (local development)
+# Try environment variable (works for both local .env and Hugging Face secrets)
 api_key = os.getenv("GEMINI_API_KEY")
 
-# Try Streamlit secrets (Hugging Face deployment)
+# Try Streamlit secrets (local .streamlit/secrets.toml)
 if not api_key:
     try:
         if hasattr(st, 'secrets') and "GEMINI_API_KEY" in st.secrets:
             api_key = st.secrets["GEMINI_API_KEY"]
     except Exception as e:
-        print(f"Error accessing secrets: {e}")
+        print(f"[DEBUG] Error accessing st.secrets: {e}")
+
+# Debug: Check what we found
+if api_key:
+    print(f"[DEBUG] API key found: {api_key[:10]}...")
+else:
+    print("[DEBUG] No API key found in environment or secrets")
 
 if not api_key:
     st.error("❌ GEMINI_API_KEY not found!")
     st.info("📝 For Hugging Face Spaces: Go to Settings → Repository secrets → Add secret named 'GEMINI_API_KEY'")
     st.info("🔑 Get your API key from: https://makersuite.google.com/app/apikey")
+    st.code("Current environment check:\n" +
+            f"- os.getenv('GEMINI_API_KEY'): {'Found' if os.getenv('GEMINI_API_KEY') else 'Not found'}\n" +
+            f"- st.secrets available: {hasattr(st, 'secrets')}")
     st.stop()
 
 genai.configure(api_key=api_key)
