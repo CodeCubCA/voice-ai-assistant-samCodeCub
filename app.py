@@ -10,33 +10,17 @@ import base64
 # Load environment variables
 load_dotenv()
 
-# Configure Gemini API - check for API key
-api_key = None
-
-# Try environment variable (works for both local .env and Hugging Face secrets)
+# Configure Gemini API
 api_key = os.getenv("GEMINI_API_KEY")
-
-# Try Streamlit secrets (local .streamlit/secrets.toml)
 if not api_key:
     try:
         if hasattr(st, 'secrets') and "GEMINI_API_KEY" in st.secrets:
             api_key = st.secrets["GEMINI_API_KEY"]
-    except Exception as e:
-        print(f"[DEBUG] Error accessing st.secrets: {e}")
-
-# Debug: Check what we found
-if api_key:
-    print(f"[DEBUG] API key found: {api_key[:10]}...")
-else:
-    print("[DEBUG] No API key found in environment or secrets")
+    except:
+        pass
 
 if not api_key:
     st.error("❌ GEMINI_API_KEY not found!")
-    st.info("📝 For Hugging Face Spaces: Go to Settings → Repository secrets → Add secret named 'GEMINI_API_KEY'")
-    st.info("🔑 Get your API key from: https://makersuite.google.com/app/apikey")
-    st.code("Current environment check:\n" +
-            f"- os.getenv('GEMINI_API_KEY'): {'Found' if os.getenv('GEMINI_API_KEY') else 'Not found'}\n" +
-            f"- st.secrets available: {hasattr(st, 'secrets')}")
     st.stop()
 
 genai.configure(api_key=api_key)
@@ -699,7 +683,7 @@ st.markdown(f"""
     <div style='text-align: center; margin-bottom: 30px;'>
         <h1 style='font-size: 3.5rem; margin: 0;'>{personality_emoji}</h1>
         <h1>{personality_name}</h1>
-        <p style='color: rgba(255, 255, 255, 0.7); font-size: 1.1rem;'>Powered by Gemini 2.5 Flash ⚡</p>
+        <p style='color: rgba(255, 255, 255, 0.7); font-size: 1.1rem;'>Powered by Google Gemini ⚡</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -925,7 +909,7 @@ Maintain a professional yet expressive demeanor. Be articulate, organized, thoro
 
             # Create model with system instruction
             model = genai.GenerativeModel(
-                'gemini-2.5-flash',
+                'gemini-2.0-flash-exp',
                 system_instruction=system_instruction
             )
 
@@ -1049,7 +1033,7 @@ st.markdown(
     """
     <div style='text-align: center; padding: 20px 0; margin-top: 40px;'>
         <p style='color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin: 5px 0;'>
-            ⚡ Powered by <strong style='color: rgba(255, 255, 255, 0.7);'>Google Gemini API</strong>
+            ⚡ Powered by <strong style='color: rgba(255, 255, 255, 0.7);'>Google Gemini</strong>
         </p>
         <p style='color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin: 5px 0;'>
             🚀 Built with <strong style='color: rgba(255, 255, 255, 0.7);'>Streamlit</strong>
